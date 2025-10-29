@@ -49,24 +49,22 @@ def save_data_to_csv(data: list[tuple] | str, filename: str) -> str:
     """
     print(f"   [Tool Action] Saving data to {filename}...")
     try:
-        if isinstance(data, str):
-            try:
-                data = eval(data)
-            except:
-                return f"Error: Could not parse data string: {data}"
-        
-        if not data:
-            return "Error: No data provided to save."
         
         if not isinstance(data, list):
             return "Error: Data must be a list of tuples or lists."
         
+        rows = [list(row) if isinstance(row, (list, tuple)) else [row] for row in data]
+        
+        # Ensure .csv extension
+        if not filename.lower().endswith(".csv"):
+            filename += ".csv"
+        
         base_dir = os.path.join(os.getcwd(), "files")
         os.makedirs(base_dir, exist_ok=True)
-        file_path = os.path.join(base_dir, filename)+'.csv'
+        file_path = os.path.join(base_dir, filename)
         with open(file_path, 'w', newline='', encoding='utf-8') as f:
             writer = csv.writer(f)
-            writer.writerows(data)
+            writer.writerows(rows)
         
         abs_path = os.path.abspath(file_path)
         return f"Data saved successfully to: {abs_path}"
